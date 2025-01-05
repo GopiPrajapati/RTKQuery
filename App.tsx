@@ -1,41 +1,23 @@
-import {Platform, SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import React, {useState} from 'react';
-import {KeyboardAccessoryNavigation} from 'react-native-keyboard-accessory';
-import Input from './src/components/Input';
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
-import MText from './src/components/Text/MText';
-const App = () => {
-  const [todoText, setTodoText] = useState('');
-  return (
-    <SafeAreaView>
-      <View style={styles.con}>
-        <MText style={styles.title} kind="h2">
-          Todo List
-        </MText>
+import {StyleSheet, Text, View} from 'react-native';
+import React from 'react';
+import {Provider} from 'react-redux';
+import GithuDemo from './src/screens/GithubDemo';
+import {store} from './src/app/store';
+import CRUDDemo from './src/screens/CRUDDemo';
+import {NavigationContainer} from '@react-navigation/native';
+import RootNavigation from './src/navigation/RootNavigation';
 
-        <Input
-          hint="Enter Todo Note Here"
-          onChange={text => setTodoText(text)}
-        />
-      </View>
-      {Platform.OS == 'ios' && (
-        <KeyboardAccessoryNavigation androidAdjustResize />
-      )}
-    </SafeAreaView>
+const App = () => {
+  return (
+    <NavigationContainer>
+      <Provider store={store}>
+        <RootNavigation />
+        {/* <CRUDDemo /> */}
+      </Provider>
+    </NavigationContainer>
   );
 };
 
 export default App;
 
-const styles = StyleSheet.create({
-  con: {
-    marginHorizontal: wp(4),
-  },
-  title: {
-    fontSize: hp(3),
-    textDecorationLine: 'underline',
-  },
-});
+const styles = StyleSheet.create({});
