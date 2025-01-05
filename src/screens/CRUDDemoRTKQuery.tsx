@@ -1,5 +1,6 @@
 import {
   FlatList,
+  LogBox,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -23,8 +24,11 @@ import {
 } from '../feature/userDetailsMock/userDetailsSlice';
 import {screens} from '../utility/screens';
 import ReducerComponent from '../components/ReducerComponent';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {useGetUsersQuery} from '../feature/RTK/apiSlice';
+import Loader from '../components/basics/Loader';
 
-const CRUDDemo: FC = ({navigation}) => {
+const CRUDDemoRTKQuery: FC = ({navigation}) => {
   const dispatch = useDispatch();
 
   //   const [data, setData] = useState([]);
@@ -37,6 +41,10 @@ const CRUDDemo: FC = ({navigation}) => {
 
   //   // navigation?.navigate(screens.GithubDemo);
   // };
+
+  LogBox.ignoreLogs([
+    'VirtualizedLists should never be nested inside plain ScrollViews',
+  ]);
   const handleSubmitPress = async () => {
     try {
       // Dispatch the createUser thunk and wait for it to resolve or reject
@@ -46,22 +54,38 @@ const CRUDDemo: FC = ({navigation}) => {
       setName('');
       setId('');
       setNumber('');
+      navigation?.navigate(screens.GithubDemo);
       console.log('User created successfully:', result);
     } catch (error) {
       // If the API call fails, log the error
       console.log('Failed to create user:', error);
     }
   };
-  const data = useSelector(state => state.userDetails);
+  // const data = useSelector(state => state.userDetails);
 
+  // console.log('data', data);
+
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    originalArgs,
+    isSuccess,
+    currentData,
+    refetch,
+  } = useGetUsersQuery(4, {
+    refetchOnFocus: true,
+  });
   console.log('data', data);
 
-  useEffect(() => {
-    dispatch(showUser());
-  }, []);
+  // useEffect(() => {
+  //   dispatch(showUser());
+  // }, []);
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <Loader isLoading={isLoading} />
       <StatusBar
         hidden={false}
         backgroundColor={colors.purple}
@@ -81,19 +105,11 @@ const CRUDDemo: FC = ({navigation}) => {
                 CRUD
               </MText>
             </View>
-            <View style={{marginHorizontal: wp(4)}}>
-              {/* <Input
-                value={todoText}
-                hint="Enter Todo Note Here"
-                onChange={text => setTodoText(text)}
-                rightIcon={rightIcon()}
-              /> */}
-            </View>
+            <View style={{marginHorizontal: wp(4)}}></View>
             <View style={{marginHorizontal: wp(4)}}>
               <MText style={styles.subTitle} kind="h2">
                 Enter Details
               </MText>
-              <ReducerComponent />
 
               <Input
                 hint={'Name'}
@@ -126,8 +142,9 @@ const CRUDDemo: FC = ({navigation}) => {
                 <Text style={styles.submitText}>Submit</Text>
               </TouchableOpacity>
               <FlatList
-                data={data?.users}
+                data={data}
                 renderItem={item => {
+                  const {name} = item.item ?? {};
                   return (
                     <View style={styles.flatListCon}>
                       <View style={styles.row}>
@@ -138,19 +155,25 @@ const CRUDDemo: FC = ({navigation}) => {
                             color: colors.black,
                           }}
                           kind="medium">
-                          {item.item.name}
+                          {String(name).charAt(0).toUpperCase() +
+                            String(name).slice(1)}
                         </MText>
+                        <TouchableOpacity
+                          style={{
+                            paddingHorizontal: wp(1),
+                          }}>
+                          <MaterialCommunityIcons
+                            name="delete"
+                            style={{color: colors.black}}
+                            size={hp(3)}
+                          />
+                        </TouchableOpacity>
                       </View>
                     </View>
                   );
                 }}
               />
             </View>
-            {/* <TouchableOpacity onPress={() => null}>
-              <MText style={styles.subTitle} kind="medium">
-                FetchTodoListAPI
-              </MText>
-            </TouchableOpacity> */}
           </View>
         </ScrollView>
       </View>
@@ -158,7 +181,7 @@ const CRUDDemo: FC = ({navigation}) => {
   );
 };
 
-export default CRUDDemo;
+export default CRUDDemoRTKQuery;
 
 const styles = StyleSheet.create({
   safeArea: {backgroundColor: colors.purple, flex: 1},
