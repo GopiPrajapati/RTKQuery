@@ -9,8 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {FC, useEffect, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
+import React, {FC, useState} from 'react';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -18,23 +17,15 @@ import {
 import MText from '../components/Text/MText';
 import colors from '../utility/colors';
 import Input from '../components/Input';
-import {
-  createUser,
-  showUser,
-} from '../feature/userDetailsMock/userDetailsSlice';
-import {screens} from '../utility/screens';
-import ReducerComponent from '../components/ReducerComponent';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {useGetUsersQuery} from '../feature/RTK/apiSlice';
 import Loader from '../components/basics/Loader';
 
 const CRUDDemoRTKQuery: FC = ({navigation}) => {
-  const dispatch = useDispatch();
-
-  //   const [data, setData] = useState([]);
+  const [data, setData] = useState([]);
   const [name, setName] = useState('');
   const [id, setId] = useState('');
   const [number, setNumber] = useState('');
+  const [isLoading, setLoading] = useState(false);
 
   // const handleSubmitPress = async () => {
   //   const response dispatch(createUser({name: name, number: number, id: id}).);
@@ -45,43 +36,26 @@ const CRUDDemoRTKQuery: FC = ({navigation}) => {
   LogBox.ignoreLogs([
     'VirtualizedLists should never be nested inside plain ScrollViews',
   ]);
-  const handleSubmitPress = async () => {
-    try {
-      // Dispatch the createUser thunk and wait for it to resolve or reject
-      const result = await dispatch(createUser({name, number, id})).unwrap();
 
-      // If the API call is successful, clear the input fields
-      setName('');
-      setId('');
-      setNumber('');
-      navigation?.navigate(screens.GithubDemo);
-      console.log('User created successfully:', result);
-    } catch (error) {
-      // If the API call fails, log the error
-      console.log('Failed to create user:', error);
-    }
-  };
+  // const handleSubmitPress = async () => {
+  //   try {
+  //     // Dispatch the createUser thunk and wait for it to resolve or reject
+  //     const result = await dispatch(createUser({name, number, id})).unwrap();
+
+  //     // If the API call is successful, clear the input fields
+  //     setName('');
+  //     setId('');
+  //     setNumber('');
+  //     navigation?.navigate(screens.GithubDemo);
+  //     console.log('User created successfully:', result);
+  //   } catch (error) {
+  //     // If the API call fails, log the error
+  //     console.log('Failed to create user:', error);
+  //   }
+  // };
   // const data = useSelector(state => state.userDetails);
 
   // console.log('data', data);
-
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    originalArgs,
-    isSuccess,
-    currentData,
-    refetch,
-  } = useGetUsersQuery(4, {
-    refetchOnFocus: true,
-  });
-  console.log('data', data);
-
-  // useEffect(() => {
-  //   dispatch(showUser());
-  // }, []);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -138,7 +112,8 @@ const CRUDDemoRTKQuery: FC = ({navigation}) => {
               />
               <TouchableOpacity
                 style={styles.submitCon}
-                onPress={handleSubmitPress}>
+                // onPress={handleSubmitPress}
+                onPress={() => null}>
                 <Text style={styles.submitText}>Submit</Text>
               </TouchableOpacity>
               <FlatList
